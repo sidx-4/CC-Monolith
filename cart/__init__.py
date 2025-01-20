@@ -1,5 +1,4 @@
 import json
-
 import products
 from cart import dao
 from products import Product
@@ -20,21 +19,19 @@ def get_cart(username: str) -> list:
     cart_details = dao.get_cart(username)
     if cart_details is None:
         return []
-    
+
+    # Process cart details and retrieve all products in a single loop
     items = []
     for cart_detail in cart_details:
         contents = cart_detail['contents']
-        evaluated_contents = eval(contents)  
-        for content in evaluated_contents:
-            items.append(content)
+        evaluated_contents = eval(contents)  # Convert stringified list into a Python list
+        
+        # Fetch product details for all product IDs in evaluated_contents
+        for product_id in evaluated_contents:
+            product_details = products.get_product(product_id)  # Fetch product details
+            items.append(product_details)
     
-    i2 = []
-    for i in items:
-        temp_product = products.get_product(i)
-        i2.append(temp_product)
-    return i2
-
-    
+    return items
 
 
 def add_to_cart(username: str, product_id: int):
@@ -44,7 +41,6 @@ def add_to_cart(username: str, product_id: int):
 def remove_from_cart(username: str, product_id: int):
     dao.remove_from_cart(username, product_id)
 
+
 def delete_cart(username: str):
     dao.delete_cart(username)
-
-
